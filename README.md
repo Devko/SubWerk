@@ -84,7 +84,8 @@ the plugin's own entry points into `build/demos-out/` (WAV, and all of them back
 ## Installation
 
 Download a release package (`SubWerk-<version>-mpc-armv7.zip`) from
-[Releases](https://github.com/Devko/SubWerk/releases), or build one with `make plugin-package`
+[Releases](https://github.com/Devko/SubWerk/releases) (or from the
+[plugin catalog](https://open-mpc.github.io/)), or build one with `make plugin-package`
 (see [Building](docs/BUILDING.md)). Unzip it and follow the `INSTALL.md` inside. In short:
 
 ```sh
@@ -98,6 +99,14 @@ and starts MPC again. Running it again upgrades in place and keeps your own pres
 `Presets/User/` inside that folder) and favorites. Then add **SubWerk** to a track from MPC's
 instrument plugins.
 
+**MPC OS 3.10.1 and later** load plugins only from a folder named `VST2 Plugins` at the root of a
+drive (internal, SD card or USB), with Preferences → Enhancements → External Plugin Support on;
+`/sdcard/Synths` is no longer listed. No SSH needed: unzip `SubWerk-<version>-mpc-sdk.zip` and copy
+its `Devko - VST - SubWerk` folder into `VST2 Plugins`, or use the catalog's Plugin Manager. The
+installer above also works there: `install.sh -t "<drive>/VST2 Plugins"`
+(`make plugin-install INSTALL_TO=...`). Remove an older copy from `/sdcard/Synths` after moving your
+presets: MPC may draw its skin instead.
+
 To uninstall, run the package's `uninstall.sh` the same way: it stops MPC, removes the plugin and
 its `MPC.settings` entry (after a backup) and starts MPC again; your own presets and favorites stay
 in the plugin folder (delete it to remove them too).
@@ -109,7 +118,7 @@ On Linux or WSL (developed on Ubuntu 24.04):
 ```sh
 make test            # the full test suite under ASan/UBSan
 make arm-plugin      # build/arm/subwerk.so for the device
-make plugin-package  # dist/SubWerk-<version>-mpc-armv7.zip
+make plugin-package  # dist/SubWerk-<version>-mpc-armv7.zip and -mpc-sdk.zip (MPC OS 3.10.1)
 ```
 
 Release packages come from CI (glibc 2.31, profile-guided, checked with the plugin catalog's own
@@ -131,6 +140,7 @@ checker): see [Building](docs/BUILDING.md#release-builds).
 | 0.0.8 — the melodic set: 34 presets (108 in all) | ✅ |
 | 0.0.9 — resonance and feedback calibrated against corrected comparisons with the original | ✅ |
 | 0.0.10 — the new name, SubWerk: presets, favorites and saved projects carry over | ✅ |
+| 0.0.11 — MPC OS 3.10.1: `plugin.json` in the folder, the SDK-format zip for `VST2 Plugins` | 🔜 |
 | On the device: play every page | 🔜 |
 | v0.1 — parameter list frozen (append-only from then on) | ⬜ |
 

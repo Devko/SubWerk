@@ -1,7 +1,14 @@
 # Vendored: sd88me/mpc-vst-plugins (MIT)
 
 Copied from https://github.com/sd88me/mpc-vst-plugins at commit
-`670b20b9ab655140f324f9d093aa5c6f35929f73` (2026-10-04). License: see `LICENSE`
+`670b20b9ab655140f324f9d093aa5c6f35929f73` (2026-10-04). The release tools were re-copied from
+https://github.com/open-mpc/mpc-vst-plugins (the repo's new home) at commit
+`0dc17120cd7e952e95eeecdd820ac9e495a75ee9` (2026-11-12, the one its MPC OS 3.10.1 notice names) on 2026-11-14:
+`tools/release.py`, `tools/release/*`, `tools/catalog_check.py`, and the new `tools/sdk_zip.py`, `deps.py`,
+`skin_compat.py`, `skin_roles_2x.json`, `user_files.py` they need. They write the `plugin.json` MPC OS 3.10.1
+needs and the Akai SDK-format zip. The skin tools (`gen_vst.py`, `shadow_skin.py`, `studio*.py`, `skin_assets.py`,
+`shadow_art.c`, `params.py`) and `wrapper/` stay at 670b20b9: upstream's changes there are new features we don't use,
+and re-copying them would change the skin. License: see `LICENSE`
 (MIT, Copyright (c) 2026 sd88me); `tools/vendor/force-shadow/` carries its own MIT LICENSE.
 Unmodified apart from the marked local patches listed below.
 
@@ -54,3 +61,8 @@ Re-apply them after re-copying upstream.
    replaced. `test/install_test.sh` and `test/release_test.sh` (`make test-install`) cover it.
    Expected side effect: `tools/catalog_check.py` regenerates `install.sh` from the template without
    `@PREV_SKIN@` and so warns that it differs from the current template.
+   Kept over upstream's own `release.py --retire` (2026-11-12): that removes the old folder only if its
+   `mpc-plugin.json` carries the new id, and the old release tools never put an `mpc-plugin.json` into the plugin
+   folder, so it would leave every SubForce install behind. <!-- werk-rename: keep -->
+   Both are in the files now; the Makefile uses `--previous-name`. Re-applied by a three-way merge on the 0dc17120
+   re-copy (done in EffectWerk, whose copies were the same as these; the merged files are copied over as they are).

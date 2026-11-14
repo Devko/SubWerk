@@ -4,6 +4,23 @@ Releases are built by CI from a `vX.Y.Z` tag (see [Building](docs/BUILDING.md#re
 section for the tag's version becomes the release's notes. While the version is 0.x the parameter list
 may still change between releases.
 
+## 0.0.11
+
+**Ready for MPC OS 3.10.1**, which runs third-party plugins officially. The sound is unchanged.
+
+- The plugin folder now carries a `plugin.json` (Akai's plugin folder format). On MPC OS 3.10.1 and later, copy
+  `Devko - VST - SubWerk` into a folder named `VST2 Plugins` at the root of a drive (internal, SD card or USB) and turn
+  on Preferences → Enhancements → External Plugin Support: MPC lists SubWerk with its instrument plugins, under
+  External VST Plugins, Devko.
+- The release also comes as `SubWerk-0.0.11-mpc-sdk.zip`: the same folder in the layout of Akai's MPC Plugin SDK,
+  ready to copy into `VST2 Plugins`. The `-mpc-armv7.zip` with the installer stays as it was for MPC OS 3.9.1 and earlier;
+  on 3.10.1 its installer takes the folder to use: `install.sh -t "<drive>/VST2 Plugins"`.
+- Your presets, favorites and recents live in the plugin's own folder, on whichever drive it is. Moving an older install
+  by hand: take `Presets/` and the `preset_*.txt` files along, then delete the old `/sdcard/Synths/Devko - VST - SubWerk`
+  (MPC may otherwise draw that folder's skin).
+- For the Force and the first-generation MPCs (32-bit); there is no build for the 64-bit MPCs (Live III, XL) yet.
+- The release tools are the plugin catalog's current ones (open-mpc/mpc-vst-plugins).
+
 ## 0.0.10
 
 **SubForce is now SubWerk: a new name, the same synth.** <!-- werk-rename: keep -->

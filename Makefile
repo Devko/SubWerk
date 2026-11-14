@@ -227,7 +227,7 @@ bench-device: $(ARM_SO) $(ARM_SO_STAGES) $(ARM_BENCH)
 
 # Release zip: plugin + skin + sd88me's installer (stops MPC, backs up and edits
 # MPC.settings, restarts MPC).
-PLUGIN_VERSION ?= 0.0.10
+PLUGIN_VERSION ?= 0.0.11
 plugin-package: $(ARM_SO) $(SKIN)
 	@# Everything shipped runs under BusyBox on the device: a CR in a script breaks it there.
 	@# grep: 1 = no CR found (good); 0 = found one; 2 = it couldn't read the scripts.
@@ -243,6 +243,9 @@ plugin-package: $(ARM_SO) $(SKIN)
 		--requires "root SSH (MockbaMod); MPC OS 3.x for the pages" \
 		--user-data Presets --user-data preset_favorites.txt --user-data preset_recent.txt \
 		--previous-name "$(strip $(PREV_NAME))" -o dist
+	@# MPC OS 3.10.1+: the same plugin folder in Akai's SDK layout (one folder, its plugin.json naming the .so as
+	@# subwerk-arm32.so), to copy by hand into a drive's "VST2 Plugins"; the catalog offers it as the 3.10.1 download.
+	$(PY) $(MV)/tools/sdk_zip.py dist/SubWerk-$(PLUGIN_VERSION)-mpc-sdk.zip dist/SubWerk-$(PLUGIN_VERSION)-mpc-armv7.zip
 
 # The package's installer against scratch folders: an upgrade from the old name moves the user's files over; and
 # release.py refuses an old name that isn't one. (Used as $(strip $(PREV_NAME)): make keeps the space before a comment.)
@@ -253,12 +256,16 @@ test-install: plugin-package
 
 # Install on a device: stops MPC, backs up + edits MPC.settings, restarts MPC. Save the MPC
 # project first. Usage: make plugin-install FORCE=root@<ip>
+# MPC OS 3.10.1 lists plugins only from a drive's "VST2 Plugins" folder, not /sdcard/Synths: there, add
+# INSTALL_TO="<drive>/VST2 Plugins".
+INSTALL_TO ?=
+INSTALL_T := $(if $(strip $(INSTALL_TO)), -t "$(strip $(INSTALL_TO))")
 PKG_TMP := /tmp/sfpkg
 plugin-install: plugin-package
 	rm -rf $(PKG_TMP) && mkdir -p $(PKG_TMP)
 	python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' dist/SubWerk-$(PLUGIN_VERSION)-mpc-armv7.zip $(PKG_TMP)
 	tar -C $(PKG_TMP) -cf - SubWerk-$(PLUGIN_VERSION) | ssh $(SSH_OPTS) $(FORCE) 'rm -rf /tmp/SubWerk-$(PLUGIN_VERSION) && tar -C /tmp -xf -'
-	$(SSH) $(FORCE) 'sh /tmp/SubWerk-$(PLUGIN_VERSION)/install.sh -y'
+	$(SSH) $(FORCE) 'sh /tmp/SubWerk-$(PLUGIN_VERSION)/install.sh -y$(INSTALL_T)'
 
 $(BUILD):
 	mkdir -p $(BUILD)

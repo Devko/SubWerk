@@ -44,7 +44,7 @@ make test                      # the full suite under ASan/UBSan
 make arm-plugin                # build/arm/subwerk.so
 make demos                     # every factory preset as a WAV, in build/demos-out/
 make skin preview              # the skin, and every page as surface/build/page_*.png
-make plugin-package            # dist/SubWerk-<version>-mpc-armv7.zip
+make plugin-package            # dist/SubWerk-<version>-mpc-armv7.zip and -mpc-sdk.zip (MPC OS 3.10.1)
 ```
 
 `surface/surface.py` is the single source of the parameter list and the touchscreen pages. Every
@@ -71,7 +71,7 @@ the break).
 | `arm-bench` | `build/arm/sfbench`, the CPU bench for the device |
 | `arm-bench-stages` | `build/arm/subwerk_stages.so`, the profiling build (never shipped) |
 | `bench-device` | Run the CPU bench on a device (see [below](#benchmarking-on-the-device)) |
-| `plugin-package` | `dist/SubWerk-<version>-mpc-armv7.zip` with the installer |
+| `plugin-package` | `dist/SubWerk-<version>-mpc-armv7.zip` with the installer, and `-mpc-sdk.zip` (MPC OS 3.10.1) |
 | `plugin-install` | Package, copy to the device and install without asking (`install.sh -y`: stops and restarts MPC) |
 | `clean` | Remove `build/` and `surface/build/` |
 
@@ -102,11 +102,12 @@ from such a fit.
 |---|---|
 | `FORCE` | The device's SSH address, `root@<ip>`; required by `bench-device` and `plugin-install` |
 | `SSH_KEY` | Private key for the device's root login (default: ssh's own keys and config) |
+| `INSTALL_TO` | The folder `plugin-install` installs into (default: the installer's `/sdcard/Synths`); `<drive>/VST2 Plugins` on MPC OS 3.10.1 |
 | `PY` | Python 3 with Pillow, for `skin`, `preview` and `plugin-package` (default `python3`) |
 | `PGO` | `auto` (default): profile-guided when ARM programs can run here (`qemu-arm`, or natively); `1`: always; `0`: plain build |
 | `ARM_PREFIX` | The device toolchain's prefix (default `arm-linux-gnueabihf-`); empty for a native ARM build |
 | `ARM_RUN` | How ARM programs run here (default `qemu-arm -L /usr/arm-linux-gnueabihf`); empty on ARM |
-| `PLUGIN_VERSION` | Release version (default `0.0.10`): the zip's name, its `INSTALL.md` and the catalog manifest; CI sets it from the `vX.Y.Z` tag |
+| `PLUGIN_VERSION` | Release version (default `0.0.11`): the zip's name, its `INSTALL.md` and the catalog manifest; CI sets it from the `vX.Y.Z` tag |
 | `BENCH_ARGS` | `sfbench` arguments for `bench-device` (default `-s 3`) |
 | `PRESET_LUFS` | The loudness `preset-levels` matches the factory presets to |
 
@@ -167,7 +168,10 @@ make plugin-package
 
 Builds `dist/SubWerk-<version>-mpc-armv7.zip`: the plugin and its skin as one folder, the installer
 and uninstaller, a generated `INSTALL.md` and checksums. Shipped scripts run under BusyBox on the
-device, so the build refuses CRLF line endings in them.
+device, so the build refuses CRLF line endings in them. The folder carries a `plugin.json` (Akai's
+plugin folder format, for MPC OS 3.10.1 and later). It also builds `dist/SubWerk-<version>-mpc-sdk.zip`:
+the same folder in the layout of Akai's MPC Plugin SDK (the `.so` as `subwerk-arm32.so`), to copy by
+hand into a drive's `VST2 Plugins` folder.
 
 ```sh
 make plugin-install FORCE=root@<ip>
@@ -175,7 +179,8 @@ make plugin-install FORCE=root@<ip>
 
 Packages, copies the package to the device and runs its installer without asking (`-y`): it **stops
 MPC** (save your project first), backs up and edits `MPC.settings`, and starts MPC again. A reinstall
-keeps the user's presets and favorites/recent lists.
+keeps the user's presets and favorites/recent lists. MPC OS 3.10.1 lists plugins only from a drive's
+`VST2 Plugins` folder, not `/sdcard/Synths`: there, add `INSTALL_TO="<drive>/VST2 Plugins"`.
 
 ## Release builds
 
