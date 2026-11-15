@@ -101,7 +101,7 @@ and starts MPC again. Running it again upgrades in place and keeps your own pres
 instrument plugins.
 
 **MPC OS 3.10.1 and later** load plugins only from a folder named `VST2 Plugins` at the root of a
-drive (internal, SD card or USB), with Preferences → Enhancements → External Plugin Support on;
+drive (internal, SD card or USB), with Preferences → Enhancements (Beta) → Enable Enhancements and External Plugin Support on;
 `/sdcard/Synths` is no longer listed. No SSH needed: unzip `SubWerk-<version>-mpc-sdk.zip` and copy
 its `Devko - VST - SubWerk` folder into `VST2 Plugins`, or use the catalog's Plugin Manager. The
 installer above also works there: `install.sh -t "<drive>/VST2 Plugins"`
